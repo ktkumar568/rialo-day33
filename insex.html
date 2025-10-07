@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rialo Quiz Challenge — Day 3</title>
+  <style>
+    :root {
+      --bg-light: linear-gradient(120deg, #2ecc71, #a8e063);
+      --bg-dark: linear-gradient(120deg, #1b4332, #081c15);
+      --text-light: #fff;
+      --text-dark: #e0e0e0;
+      --card-light: rgba(255, 255, 255, 0.1);
+      --card-dark: rgba(0, 0, 0, 0.3);
+    }
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: var(--bg-light);
+      color: var(--text-light);
+      text-align: center;
+      margin: 0;
+      padding: 0;
+      transition: background 0.5s ease, color 0.5s ease;
+    }
+    body.dark {
+      background: var(--bg-dark);
+      color: var(--text-dark);
+    }
+    h1 {
+      background-color: rgba(0, 0, 0, 0.2);
+      padding: 20px;
+      border-radius: 12px;
+      margin: 20px auto;
+      width: 80%;
+    }
+    .quiz-container {
+      background-color: var(--card-light);
+      border-radius: 16px;
+      padding: 30px;
+      width: 80%;
+      margin: 0 auto 40px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      transition: background 0.5s ease;
+    }
+    body.dark .quiz-container {
+      background-color: var(--card-dark);
+    }
+    .question {
+      font-size: 1.2rem;
+      margin-bottom: 20px;
+    }
+    .options label {
+      display: block;
+      background: rgba(255, 255, 255, 0.15);
+      margin: 8px auto;
+      width: 80%;
+      border-radius: 10px;
+      padding: 10px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    .options label:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+    button {
+      background-color: #27ae60;
+      color: white;
+      border: none;
+      padding: 12px 25px;
+      border-radius: 10px;
+      cursor: pointer;
+      margin: 15px;
+      transition: 0.3s;
+    }
+    button:hover {
+      background-color: #1e8449;
+    }
+    #result {
+      font-size: 1.4rem;
+      margin-top: 25px;
+    }
+    .toggle-theme {
+      position: fixed;
+      top: 15px;
+      right: 20px;
+      background: rgba(255, 255, 255, 0.3);
+      border: none;
+      border-radius: 50%;
+      padding: 10px 15px;
+      cursor: pointer;
+      color: #fff;
+      font-size: 1.2rem;
+      transition: background 0.3s;
+    }
+    .toggle-theme:hover {
+      background: rgba(255, 255, 255, 0.5);
+    }
+  </style>
+</head>
+<body>
+  <button class="toggle-theme" onclick="toggleTheme()">🌞</button>
+  <h1>🌿 Rialo Quiz Challenge — Day 3 🌈</h1>
+  <div class="quiz-container" id="quiz"></div>
+  <button onclick="submitQuiz()">Submit Answers</button>
+  <div id="result"></div>
+
+  <script>
+    const quizData = [
+      {
+        question: "What problem does Rialo solve for real-world assets?",
+        options: ["Decentralized gaming assets", "Lack of real-time reactivity and automation", "Advertising token creation", "Cloud data replication"],
+        answer: 1
+      },
+      {
+        question: "Which type of events can Rialo handle automatically?",
+        options: ["Blockchain forks", "Corporate events like credit downgrades", "Manual approvals", "UI changes"],
+        answer: 1
+      },
+      {
+        question: "What ensures Rialo’s data accuracy?",
+        options: ["Human audits only", "Verified real-world data feeds", "Random sampling", "Manual data entry"],
+        answer: 1
+      },
+      {
+        question: "What feature defines Rialo’s tokenized assets?",
+        options: ["Static and unresponsive", "Dynamic and living instruments", "Centralized ledgers", "Immutable no-change policy"],
+        answer: 1
+      },
+      {
+        question: "Which financial area benefits from Rialo’s automation?",
+        options: ["Debt & Credit settlements", "E-commerce transactions", "Video streaming", "Chat applications"],
+        answer: 0
+      },
+      {
+        question: "What does Rialo enable for insurance?",
+        options: ["Manual approval for claims", "Parametric policies with instant payouts", "Static policies", "Unverified feeds"],
+        answer: 1
+      },
+      {
+        question: "Which capability allows Rialo to scale effectively?",
+        options: ["Off-chain batch verification", "Sub-second end-to-end processing", "Weekly updates", "Manual confirmation"],
+        answer: 1
+      },
+      {
+        question: "What is Rialo’s privacy model focused on?",
+        options: ["Total anonymity", "Verifiable but confidential execution", "Public disclosure", "Manual masking"],
+        answer: 1
+      },
+      {
+        question: "What kind of data can Rialo connect to assets?",
+        options: ["GPS and inspection data for commodities", "Unverified random data", "Chat logs", "Social media posts"],
+        answer: 0
+      },
+      {
+        question: "What is Rialo’s ultimate goal?",
+        options: ["To make RWAs truly reactive and automated", "To build a gaming ecosystem", "To create social tokens", "To run centralized exchanges"],
+        answer: 0
+      }
+    ];
+
+    const quizContainer = document.getElementById('quiz');
+
+    quizData.forEach((q, i) => {
+      const questionHTML = `
+        <div class='question'>${i + 1}. ${q.question}</div>
+        <div class='options'>
+          ${q.options.map((opt, j) => `
+            <label><input type='radio' name='q${i}' value='${j}'> ${opt}</label>
+          `).join('')}
+        </div>
+      `;
+      quizContainer.innerHTML += questionHTML;
+    });
+
+    function submitQuiz() {
+      let score = 0;
+      quizData.forEach((q, i) => {
+        const selected = document.querySelector(`input[name='q${i}']:checked`);
+        if (selected && parseInt(selected.value) === q.answer) score++;
+      });
+      document.getElementById('result').innerText = `You scored ${score} out of ${quizData.length}! 🌟`;
+    }
+
+    function toggleTheme() {
+      const body = document.body;
+      body.classList.toggle('dark');
+      const themeButton = document.querySelector('.toggle-theme');
+      themeButton.textContent = body.classList.contains('dark') ? '🌙' : '🌞';
+    }
+  </script>
+</body>
+</html>
